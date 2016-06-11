@@ -1,3 +1,6 @@
 *.o
 *.xml
 ozwcp
+.idea
+*.txt
+nbproject
