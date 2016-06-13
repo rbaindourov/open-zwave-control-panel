@@ -771,15 +771,23 @@ int32 main(int32 argc, char* argv[])
 	int32 i;
 	extern char *optarg;
 	long webport;
-	char *ptr;
-
-	while ((i = getopt(argc, argv, "dp:")) != EOF)
-		switch (i) {
+	char *ptr;        
+        string optvalue;
+        char * devname;
+        
+	while ((i = getopt(argc, argv, "dp:z:")) != EOF){
+                
+                fprintf( stdout, "%c:%s\n", i,optarg );
+                switch (i) {
+                    
+                        case 'z':
+                            devname = optarg;                            
+                            break;
 			case 'd':
 				debug = 1;
 				break;
 			case 'p':
-				webport = strtol(optarg, &ptr, 10);
+				webport = strtol(optarg, &ptr, 10);                                
 				if (ptr == optarg)
 					goto bad;
 				break;
@@ -788,17 +796,21 @@ int32 main(int32 argc, char* argv[])
 				fprintf(stderr, "usage: ozwcp [-d] -p <port>\n");
 			exit(1);
 		}
-
+        }
+        
+        
 	for (i = 0; i < MAX_NODES; i++)
 		nodes[i] = NULL;
 
+        
 	Options::Create("./config/", "", "--SaveConfiguration=true --DumpTriggerLevel=0");
 	Options::Get()->Lock();
 
 	Manager::Create();
 	wserver = new Webserver(webport);
 	Manager::Get()->AddWatcher(OnNotification, wserver);
-
+        //Manager::Get()->AddDriver(devname);
+        
 	while (!wserver->isReady()) {
 		delete wserver;
 		sleep(2);

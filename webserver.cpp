@@ -982,8 +982,8 @@ int Webserver::Handler (struct MHD_Connection *conn, const char *url,
 	int ret;
 	conninfo_t *cp;
 
-	if (debug)
-		fprintf(stderr, "%x: %s: \"%s\" conn=%x size=%d *ptr=%x\n", pthread_self(), method, url, conn, *up_data_size, *ptr);
+	
+	fprintf(stderr, "Inboud Request: %x: %s: \"%s\" conn=%x size=%d *ptr=%x\n", pthread_self(), method, url, conn, *up_data_size, *ptr);
 	if (*ptr == NULL) {	/* do never respond on first call */
 		cp = (conninfo_t *)malloc(sizeof(conninfo_t));
 		if (cp == NULL)
@@ -1033,7 +1033,8 @@ int Webserver::Handler (struct MHD_Connection *conn, const char *url,
 				*up_data_size = 0;
 
 				if (strcmp((char *)cp->conn_arg1, "open") == 0) { /* start connection */
-					if (devname != NULL || usb) {
+                                        fprintf(stdout, "Trying to open device\n");
+                                        if (devname != NULL || usb) {
 						MyNode::setAllChanged(true);
 					} else {
 						if ((char *)cp->conn_arg3 != NULL && strcmp((char *)cp->conn_arg3, "true") == 0) {
@@ -1047,6 +1048,7 @@ int Webserver::Handler (struct MHD_Connection *conn, const char *url,
 							}
 							usb = false;
 							strcpy(devname, (char *)cp->conn_arg2);
+                                                        fprintf(stdout, "Manager::Get()->AddDriver(%s);\n", devname );
 							Manager::Get()->AddDriver(devname);
 						}
 					}
@@ -1341,6 +1343,7 @@ int Webserver::Handler (struct MHD_Connection *conn, const char *url,
 				*up_data_size = 0;
 
 				if (strcmp((char *)cp->conn_arg1, "save") == 0) { /* Save config */
+                                        fprintf(stderr, "Writing config file\n");
 					Manager::Get()->WriteConfig(homeId);
 					pthread_mutex_lock(&glock);
 					needsave = false;

@@ -79,6 +79,7 @@ function OptionGroup(label, disabled) {
 }
 
 function SaveNode(newid) {
+    console.log( 'SaveNode' + JSON.stringify(newid));
     var i = newid.substr(4);
     var c = -1;
     if (curnode != null)
@@ -103,6 +104,7 @@ function SaveNode(newid) {
 }
 
 function ClearNode() {
+    console.log( 'ClearNode()');
     if (curnode != null) {
         document.getElementById(curnode).className = 'normal';
         document.NodePost.nodeops.selectedIndex = 0;
@@ -122,11 +124,19 @@ function DisplayNode(n) {
 }
 
 function PollTimeout() {
+    console.log( 'PollTimeout()')
     pollhttp.abort();
     Poll();
 }
 
 function Poll() {
+    return;
+    console.log('Poll()');
+    _Poll();
+}
+
+
+function _Poll(){
     try {
         pollhttp.open("GET", 'poll.xml', true);
         pollhttp.onreadystatechange = PollReply;
@@ -139,15 +149,19 @@ function Poll() {
     } catch (e) {
         pollwait = setTimeout(PollTimeout, 3000); //3 seconds
     }
-}
 
+}
 
 function PollReply() {
     var xml;
     if (pollhttp.readyState == 4 && pollhttp.status == 200) {
         clearTimeout(pollwait);
         xml = pollhttp.responseXML;
+        console.log( 'PollReply:'+ JSON.stringify(xml) );
+        
         var poll_elems = xml.getElementsByTagName('poll');
+        console.log('poll_elems:' + JSON.stringify(poll_elems));
+        
         if (poll_elems.length > 0) {
             var changed = false;
             var poll_elem = poll_elems[0];
@@ -390,6 +404,7 @@ function PollReply() {
 }
 
 function BED() {
+    console.log('BED');
     var forms = document.forms;
     var off = false;
     (document.DevPost.devname.value.length == 0) && !document.DevPost.usbb.checked;
@@ -522,6 +537,7 @@ function HideToolTip() {
 }
 
 function DoConfig(id) {
+    console.log( 'DoConfig('+JSON.stringify(id)+')');
     if (curnode != null) {
         var dcur = document.getElementById('divconfigcur');
         var dcon = document.getElementById('divconfigcon');
@@ -551,6 +567,7 @@ function DoConfig(id) {
 }
 
 function DoValue(id, convert) {
+    console.log( 'DoValue(' +JSON.stringify(id)+','+JSON.stringify(convert)+')');
     if (curnode != null) {
         var posthttp;
         var params;
@@ -580,6 +597,7 @@ function DoValue(id, convert) {
 }
 
 function DoButton(id, pushed) {
+    console.log('DoButton('+id+','+ pushed +')');
     if (curnode != null) {
         var posthttp;
         var params;
@@ -603,11 +621,16 @@ function DoButton(id, pushed) {
 }
 
 function DoDevUSB() {
+    console.log('DoDevUSB()');
+    
     document.DevPost.devname.disabled = document.DevPost.usbb.checked;
     return true;
 }
 
 function DoDevPost(fun) {
+
+    console.log('DoDevPost(' + JSON.stringify(fun)+')');
+
     if (document.DevPost.devname.value.length > 0 || document.DevPost.usbb.checked) {
         var posthttp;
         var params;
@@ -631,6 +654,7 @@ function DoDevPost(fun) {
 }
 
 function DoNetHelp() {
+    console.log( 'DoNetHelp');
     var ninfo = document.getElementById('netinfo');
     var scencntl = document.getElementById('scencntl');
     var topocntl = document.getElementById('topocntl');
@@ -711,6 +735,7 @@ function DoNetHelp() {
 }
 
 function DoAdmPost(can) {
+    console.log('DoAdmPost(' +JSON.stringify(can) + ')');
     var posthttp;
     var fun;
     var params;
@@ -773,6 +798,8 @@ function DoAdmPost(can) {
 }
 
 function DoAdmHelp() {
+    console.log( 'DoAdmHelp()');
+    
     ainfo = document.getElementById('adminfo');
     var acntl = document.getElementById('admcntl');
     acntl.innerHTML = '';
@@ -850,6 +877,7 @@ function DoAdmHelp() {
 }
 
 function DoNodePost(val) {
+    console.log( 'DoNodeHelp('+JSON.stringify(val)+')');
     var posthttp;
     var fun;
     var params;
@@ -871,6 +899,7 @@ function DoNodePost(val) {
 }
 
 function DoNodeHelp() {
+    console.log( 'DoNodeHelp()');
     var ninfo = document.getElementById('nodeinfo');
     if (curnode == null) {
         ninfo.innerHTML = 'Must select a node below for this function.';
@@ -919,6 +948,7 @@ function DoGroup() {
 }
 
 function DoGrpPost() {
+    console.log( 'DoGrpPost()');
     var posthttp;
     var params = 'fun=group&node=' + curnode + '&num=' + document.NodePost.group.value + '&groups=';
     var opts = document.NodePost.groups.options;
@@ -942,6 +972,9 @@ function DoGrpPost() {
 }
 
 function DoPoll() {
+
+    console.log('DoPoll()');
+
     var node = curnode.substr(4);
     var npoll = document.getElementById('nodepoll');
     var polled = document.getElementById('polled');
@@ -952,6 +985,10 @@ function DoPoll() {
 }
 
 function DoPollPost() {
+
+    console.log('DoPollPost()');
+
+
     var posthttp;
     var params = 'fun=poll&node=' + curnode + '&ids=';
     var opts = document.NodePost.polls.options;
@@ -980,6 +1017,10 @@ function DoPollPost() {
 }
 
 function DoSavePost() {
+
+    console.log('DoSavePost()');
+
+
     var posthttp;
     var params = 'fun=save';
 
@@ -996,6 +1037,7 @@ function DoSavePost() {
 }
 
 function SceneLoad(fun) {
+    console.log( 'SceneLoad(' +JSON.stringify(fun)+')');
     var params = 'fun=' + fun;
     if (fun == 'load') {
         DisplaySceneSceneValue(null);
@@ -1122,6 +1164,7 @@ function SceneReply() {
     if (scenehttp.readyState == 4 && scenehttp.status == 200) {
         xml = scenehttp.responseXML;
         scenes_elem = xml.getElementsByTagName('scenes');
+        console.log( 'SceneReply(' +JSON.stringify(xml)+')');
         if (scenes_elem.length > 0) {
             var i;
             var id;
@@ -1190,6 +1233,7 @@ function SceneReply() {
 }
 
 function UpdateSceneValues(c) {
+    console.log( 'UpdateSceneValue(' +JSON.stringify(c)+')');
     var sv = document.getElementById('scenevalues');
     var node = nodes[c];
     var optgroups = sv.getElementsByTagName('optgroup');
@@ -1218,6 +1262,7 @@ function UpdateSceneValues(c) {
 }
 
 function DisplaySceneValue(opt) {
+    console.log( 'function DisplaySceneValue(' +JSON.stringify(opt)+')');
     var vt = document.getElementById('valuetext');
     var vs = document.getElementById('valueselect');
     var vu = document.getElementById('valueunits');
@@ -1263,6 +1308,7 @@ function DisplaySceneValue(opt) {
 }
 
 function DisplaySceneSceneValue(opt) {
+    console.log( 'DisplaySceneSceneValue(' +JSON.stringify(opt)+')');
     var vt = document.getElementById('scenevaluetext');
     var vs = document.getElementById('scenevalueselect');
     var vu = document.getElementById('scenevalueunits');
@@ -1308,6 +1354,7 @@ function DisplaySceneSceneValue(opt) {
 }
 
 function TopoLoad(fun) {
+    console.log( 'TopoLoad(' +JSON.stringify(fun)+')');
     var params = 'fun=' + fun;
     topohttp.open('POST', 'topopost.html', true);
     topohttp.onreadystatechange = TopoReply;
@@ -1318,9 +1365,12 @@ function TopoLoad(fun) {
 }
 
 function TopoReply() {
+    
     var xml;
     if (topohttp.readyState == 4 && topohttp.status == 200) {
         xml = topohttp.responseXML;
+        console.log( 'TopoReply(' +JSON.stringify(xml)+')');
+        
         var elems = xml.getElementsByTagName('topo');
         if (elems.length > 0) {
             var i;
@@ -1373,6 +1423,7 @@ function TopoReply() {
 }
 
 function DisplayStatClass(t, n) {
+    console.log('DisplayStatClass('+JSON.stringify(t)+','+JSON.stringify(n)+ ')' );
     var scb = document.getElementById('statclassbody');
     var sn = document.getElementById('statnode');
     if (curclassstat != null) {
@@ -1408,6 +1459,7 @@ function StatLoad(fun) {
 }
 
 function StatReply() {
+    console.log('StatReply');
     var xml;
     var elem;
 
@@ -1659,6 +1711,7 @@ function CreateButton(i, j, vid) {
 }
 
 function CreateDivs(genre, divtos, ind) {
+    console.log('CreateDivs(' + JSON.stringify(genre) +','+JSON.stringify(divtos)+ ',' +JSON.stringify(ind)+')')
     divto = '<table border="0" cellpadding="1" cellspacing="0"><tbody>';
     var node = nodes[ind];
     if (node.values != null) {
@@ -1713,6 +1766,7 @@ function CreateLocation(val, ind) {
 }
 
 function CreateGroup(ind) {
+    console.log('CreateGroup('+JSON.stringify(ind)+')')
     var grp;
     var i, j, k;
 
