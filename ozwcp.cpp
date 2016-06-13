@@ -807,14 +807,14 @@ int32 main(int32 argc, char* argv[])
 	Options::Get()->Lock();
 
 	Manager::Create();
-	wserver = new Webserver(webport);
+	wserver = new Webserver(webport, devname);
 	Manager::Get()->AddWatcher(OnNotification, wserver);
-        //Manager::Get()->AddDriver(devname);
+        Manager::Get()->AddDriver(devname);
         
 	while (!wserver->isReady()) {
 		delete wserver;
 		sleep(2);
-		wserver = new Webserver(webport);
+		wserver = new Webserver(webport, devname);
 	}
 
 	while (!done) {	// now wait until we are done

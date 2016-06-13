@@ -39,7 +39,7 @@ typedef enum { CON_UNK, CON_GET, CON_POST } conntype_t;
 
 class Webserver {
 	public:
-		Webserver(int const);
+		Webserver(int const, char *);
 		~Webserver();
 		bool isReady() { return ready; }
 		bool getAdminState() { return adminstate; }

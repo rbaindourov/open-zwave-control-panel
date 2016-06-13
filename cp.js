@@ -72,6 +72,7 @@ if (window.XMLHttpRequest) { // code for IE7+, Firefox, Chrome, Opera, Safari
 }
 
 function OptionGroup(label, disabled) {
+    console.log('OptionGroup'+ JSON.stringify( label ) + ' ' + JSON.stringify( disabled ))
     var element = document.createElement('optgroup');
     if (disabled !== undefined) element.disabled = disabled;
     if (label !== undefined) element.label = label;
@@ -153,12 +154,12 @@ function _Poll(){
 }
 
 function PollReply() {
+    
     var xml;
     if (pollhttp.readyState == 4 && pollhttp.status == 200) {
+        console.log( 'PollReply: '+ JSON.stringify(pollhttp.responseText) );
         clearTimeout(pollwait);
         xml = pollhttp.responseXML;
-        console.log( 'PollReply:'+ JSON.stringify(xml) );
-        
         var poll_elems = xml.getElementsByTagName('poll');
         console.log('poll_elems:' + JSON.stringify(poll_elems));
         
@@ -318,7 +319,10 @@ function PollReply() {
                 ta.innerHTML = ta.innerHTML + return2br(log_elem.firstChild.nodeValue);
                 ta.scrollTop = ta.scrollHeight;
             }
+            
+            console.log('Poll Reply: changed: ' + JSON.stringify(changed) + ' nodes:  ' + JSON.stringify(nodes) );
             if (changed) {
+                
                 var stuff = '';
                 for (var i = 1; i < nodes.length; i++) {
                     var node = nodes[i];
@@ -1449,6 +1453,7 @@ function DisplayStatClass(t, n) {
 }
 
 function StatLoad(fun) {
+    console.log('StatLoad' + JSON.stringify( fun  ));
     var params = 'fun=' + fun;
     stathttp.open('POST', 'statpost.html', true);
     stathttp.onreadystatechange = StatReply;
@@ -1597,6 +1602,7 @@ function TestHealReply() {
 }
 
 function RequestAllConfig(n) {
+    console.log('RequestAllConfig' + JSON.stringify( n  ));
     var params = 'fun=racp&node=' + n;
     racphttp.open('POST', 'confparmpost.html', true);
     racphttp.onreadystatechange = PollReply;
@@ -1758,10 +1764,12 @@ function CreateDivs(genre, divtos, ind) {
 }
 
 function CreateName(val, ind) {
+    console.log('CreateName: ' + JSON.stringify(val) + ' ' + JSON.stringify(ind));
     nodename[ind] = '<tr><td style="float: right;"><label><span class="legend">Name:&nbsp;</span></label></td><td><input type="text" class="legend form-control" size="' + boxsize(val) + '" id="name" value="' + val + '"><button class="btn btn-default" type="submit" style="margin-left: 5px;" onclick="return DoNodePost(document.NodePost.name.value);">Submit</button></td></tr>';
 }
 
 function CreateLocation(val, ind) {
+    console.log('CreateLocation: ' + JSON.stringify(val) + ' ' + JSON.stringify(ind));
     nodeloc[ind] = '<tr><td style="float: right;"><label><span class="legend">Location:&nbsp;</span></label></td><td><input type="text" class="legend form-control" size="' + boxsize(val) + '" id="location" value="' + val + '"><button class="btn btn-default" type="submit" style="margin-left: 5px;" onclick="return DoNodePost(document.NodePost.location.value);">Submit</button></td></tr>';
 }
 
@@ -1823,6 +1831,7 @@ function CreateGroup(ind) {
 }
 
 function CreatePoll(ind) {
+    console.log('CreatePoll:' + JSON.stringify(ind))
     var uc = 0;
     var sc = 0;
     var node = nodes[ind];
@@ -1843,6 +1852,7 @@ function CreatePoll(ind) {
 }
 
 function CreatePollPoll(genre, ind, cnt) {
+    console.log( "CreatePollPoll" + JSON.stringify(genre) + " " + JSON.stringify(ind) + " " + JSON.stringify(cnt) );
     var ind1;
     if (genre == 'user')
         ind1 = 0;

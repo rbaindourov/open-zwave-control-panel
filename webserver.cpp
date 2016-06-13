@@ -918,8 +918,11 @@ int web_config_post (void *cls, enum MHD_ValueKind kind, const char *key, const 
 			cp->conn_arg2 = (void *)strdup(data);
 		else if (strcmp(key, "ids") == 0)
 			cp->conn_arg3 = (void *)strdup(data);
-		else if (strcmp(key, "poll") == 0)
-			cp->conn_arg4 = (void *)strdup(data);
+		else if (strcmp(key, "poll") == 0){
+                    cp->conn_arg4 = (void *)strdup(data);
+                    fprintf( stdout, "poll data: %s", data);
+                }
+			
 	} else if (strcmp(cp->conn_url, "/savepost.html") == 0) {
 		if (strcmp(key, "fun") == 0)
 			cp->conn_arg1 = (void *)strdup(data);
@@ -1011,6 +1014,9 @@ int Webserver::Handler (struct MHD_Connection *conn, const char *url,
 		return MHD_YES;
 	}
 	if (strcmp(method, MHD_HTTP_METHOD_GET) == 0) {
+            
+            fprintf(stdout, "GET URL: %s\nGET devname: %s\n", url, devname );
+            
 		if (strcmp(url, "/") == 0 ||
 				strcmp(url, "/index.html") == 0)
 			ret = web_send_file(conn, "cp.html", MHD_HTTP_OK, false);
@@ -1398,9 +1404,10 @@ void Webserver::Free (struct MHD_Connection *conn, void **ptr, enum MHD_RequestT
  * Start up the web server
  */
 
-Webserver::Webserver (int const wport) : sortcol(COL_NODE), logbytes(0), adminstate(false)
+Webserver::Webserver (int const wport, char * device) : sortcol(COL_NODE), logbytes(0), adminstate(false)
 {
-	fprintf(stderr, "webserver starting port %d\n", wport);
+        devname = device;
+	fprintf(stdout, "WebServer starting: port: %d device: %s\n", wport, device);
 	port = wport;
 	wdata = MHD_start_daemon(MHD_USE_THREAD_PER_CONNECTION | MHD_USE_DEBUG, port,
 			NULL, NULL, &Webserver::HandlerEP, this,
