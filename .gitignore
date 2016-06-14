@@ -4,3 +4,4 @@ ozwcp
 .idea
 *.txt
 nbproject
+/.vscode/
