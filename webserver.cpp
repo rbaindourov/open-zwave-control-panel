@@ -1248,7 +1248,8 @@ int Webserver::Handler (struct MHD_Connection *conn, const char *url,
 				} else if (strcmp((char *)cp->conn_arg1, "snif") == 0) {
 					if (cp->conn_arg2 != NULL && strlen((char *)cp->conn_arg2) > 4) {
 						uint8 node = strtol(((char *)cp->conn_arg2) + 4, NULL, 10);
-						setAdminFunction("Send Node Information");
+						fprintf(stdout, "WebServer:admpost:snif: homeId = %s, node = %s ", homeId, node);
+                                                setAdminFunction("Send Node Information");
 						setAdminState(Manager::Get()->SendNodeInformation(homeId, node));
 					}
 				} else if (strcmp((char *)cp->conn_arg1, "reps") == 0) {
@@ -1275,8 +1276,9 @@ int Webserver::Handler (struct MHD_Connection *conn, const char *url,
 					}
 				} else if (strcmp((char *)cp->conn_arg1, "refreshnode") == 0) {
 					if (cp->conn_arg2 != NULL && strlen((char *)cp->conn_arg2) > 4) {
-						uint8 node = strtol(((char *)cp->conn_arg2) + 4, NULL, 10);
-						Manager::Get()->RefreshNodeInfo(homeId, node);
+						uint8 node = strtol(((char *)cp->conn_arg2) + 4, NULL, 10);						
+                                                fprintf(stdout, "WebServer:admpost:refreshnode: homeId = %s, node = %s ", homeId, node);                                                
+                                                Manager::Get()->RefreshNodeInfo(homeId, node);
 					}
 				}
 
