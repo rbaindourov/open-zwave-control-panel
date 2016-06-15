@@ -131,7 +131,7 @@ function PollTimeout() {
 }
 
 function Poll() {
-    return;
+    //return;
     console.log('Poll()');
     _Poll();
 }

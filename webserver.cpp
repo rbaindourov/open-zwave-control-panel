@@ -59,6 +59,8 @@
 #include "ozwcp.h"
 #include "webserver.h"
 
+#include "xml2json.hpp"
+
 using namespace OpenZWave;
 
 #define NBSP(str)	(str) == NULL || (*str) == '\0' ? "&nbsp;" : (str)
@@ -157,6 +159,8 @@ int web_send_file (struct MHD_Connection *conn, const char *filename, const int 
 			ct = "text/xml";
 		else if (strcmp(p, "js") == 0)
 			ct = "text/javascript";
+                else if (strcmp(p,'json')==0)
+                        ct = "text/json";
 	}
 	if (stat(filename, &buf) == -1 ||
 			((fp = fopen(filename, "r")) == NULL)) {
@@ -793,9 +797,8 @@ int Webserver::SendPollResponse (struct MHD_Connection *conn)
 	fn = mktemp(fntemp);
 	if (fn == NULL)
 		return MHD_YES;
-	strncat(fntemp, ".xml", sizeof(fntemp));
-	if (debug)
-		doc.Print(stdout, 0);
+	strncat(fntemp, ".xml", sizeof(fntemp));	
+        doc.Print(stdout, 0);
 	doc.SaveFile(fn);
 	ret = web_send_file(conn, fn, MHD_HTTP_OK, true);
 	return ret;
@@ -1277,7 +1280,7 @@ int Webserver::Handler (struct MHD_Connection *conn, const char *url,
 				} else if (strcmp((char *)cp->conn_arg1, "refreshnode") == 0) {
 					if (cp->conn_arg2 != NULL && strlen((char *)cp->conn_arg2) > 4) {
 						uint8 node = strtol(((char *)cp->conn_arg2) + 4, NULL, 10);						
-                                                fprintf(stdout, "WebServer:admpost:refreshnode: homeId = %s, node = %s ", homeId, node);                                                
+                                                fprintf(stdout, "WebServer:admpost:refreshnode: homeId = %zu, node = %u ", homeId, node);                                                
                                                 Manager::Get()->RefreshNodeInfo(homeId, node);
 					}
 				}
