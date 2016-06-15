@@ -146,7 +146,9 @@ void web_close_file (void *cls)
  */
 int web_send_file (struct MHD_Connection *conn, const char *filename, const int code, const bool unl)
 {
-	struct stat buf;
+	
+    fprintf(stdout, "WebSendFile: %s\n", filename );
+    struct stat buf;
 	FILE *fp;
 	struct MHD_Response *response;
 	const char *p;
@@ -159,11 +161,11 @@ int web_send_file (struct MHD_Connection *conn, const char *filename, const int 
 			ct = "text/xml";
 		else if (strcmp(p, "js") == 0)
 			ct = "text/javascript";
-                else if (strcmp(p,'json')==0)
+                else if (strcmp(p,"json")==0)
                         ct = "text/json";
 	}
-	if (stat(filename, &buf) == -1 ||
-			((fp = fopen(filename, "r")) == NULL)) {
+	if( stat(filename, &buf) == -1 || ((fp = fopen(filename, "r")) == NULL)) 
+        {
 		if (strcmp(p, "xml") == 0)
 			response = MHD_create_response_from_data(0, (void *)"", MHD_NO, MHD_NO);
 		else {
@@ -176,9 +178,10 @@ int web_send_file (struct MHD_Connection *conn, const char *filename, const int 
 			snprintf(s, len, FNF, filename);
 			response = MHD_create_response_from_data(len, (void *)s, MHD_YES, MHD_NO); // free
 		}
-	} else
-		response = MHD_create_response_from_callback(buf.st_size, 32 * 1024, &web_read_file, fp,
-				&web_close_file);
+	} else {
+                fprintf(stdout, "WebSendFile: from call\n" );
+		response = MHD_create_response_from_callback(buf.st_size, 32 * 1024, &web_read_file, fp, &web_close_file);
+        }
 	if (response == NULL)
 		return MHD_YES;
 	if (ct != NULL)
@@ -642,9 +645,10 @@ const char *Webserver::SendSceneResponse (struct MHD_Connection *conn, const cha
  * Process poll request from client and return
  * data as xml.
  */
-int Webserver::SendPollResponse (struct MHD_Connection *conn)
+int Webserver::SendPollResponse (struct MHD_Connection *conn, const bool json)
 {
 	TiXmlDocument doc;
+        TiXmlPrinter printer;
 	struct stat buf;
 	const int logbufsz = 1024;	// max amount to send of log per poll
 	char logbuffer[logbufsz+1];
@@ -797,9 +801,20 @@ int Webserver::SendPollResponse (struct MHD_Connection *conn)
 	fn = mktemp(fntemp);
 	if (fn == NULL)
 		return MHD_YES;
-	strncat(fntemp, ".xml", sizeof(fntemp));	
-        doc.Print(stdout, 0);
-	doc.SaveFile(fn);
+	
+        if( !json ){        
+            strncat(fntemp, ".xml", sizeof(fntemp));	        
+            doc.Print(stdout, 0);
+            doc.SaveFile(fn);            
+        } else{             
+            doc.Accept( &printer );        
+            FILE * fp = fopen( fn, "w");
+            fputs( xml2json(printer.CStr()).c_str(), fp);
+            fclose(fp);
+        }
+        
+        
+
 	ret = web_send_file(conn, fn, MHD_HTTP_OK, true);
 	return ret;
 }
@@ -1030,7 +1045,9 @@ int Webserver::Handler (struct MHD_Connection *conn, const char *url,
 		else if (strcmp(url, "/favicon.png") == 0)
 			ret = web_send_file(conn, "openzwavetinyicon.png", MHD_HTTP_OK, false);
 		else if (strcmp(url, "/poll.xml") == 0 && (devname != NULL || usb))
-			ret = SendPollResponse(conn);
+			ret = SendPollResponse(conn, false);
+                else if (strcmp(url, "/poll.json") == 0 && (devname != NULL || usb))
+			ret = SendPollResponse(conn, true);
 		else
 			ret = web_send_data(conn, UNKNOWN, MHD_HTTP_NOT_FOUND, false, false, NULL); // no free, no copy
 		return ret;
