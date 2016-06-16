@@ -336,7 +336,7 @@ const char *Webserver::SendTopoResponse (struct MHD_Connection *conn, const char
 	fn = mktemp(fntemp);
 	if (fn == NULL)
 		return EMPTY;
-	strncat(fntemp, ".xml", sizeof(fntemp));
+	strncat(fntemp, ".xml", sizeof(fntemp) - strlen(fntemp) - 1);
 	if (debug)
 		doc.Print(stdout, 0);
 	doc.SaveFile(fn);
@@ -464,7 +464,7 @@ const char *Webserver::SendStatResponse (struct MHD_Connection *conn, const char
 	fn = mktemp(fntemp);
 	if (fn == NULL)
 		return EMPTY;
-	strncat(fntemp, ".xml", sizeof(fntemp));
+	strncat(fntemp, ".xml", sizeof(fntemp) - strlen(fntemp) - 1 );
 	if (debug)
 		doc.Print(stdout, 0);
 	doc.SaveFile(fn);
@@ -516,7 +516,7 @@ const char *Webserver::SendTestHealResponse (struct MHD_Connection *conn, const 
 	fn = mktemp(fntemp);
 	if (fn == NULL)
 		return EMPTY;
-	strncat(fntemp, ".xml", sizeof(fntemp));
+	strncat(fntemp, ".xml", sizeof(fntemp) - strlen(fntemp) - 1);
 	if (debug)
 		doc.Print(stdout, 0);
 	doc.SaveFile(fn);
@@ -630,7 +630,7 @@ const char *Webserver::SendSceneResponse (struct MHD_Connection *conn, const cha
 	fn = mktemp(fntemp);
 	if (fn == NULL)
 		return EMPTY;
-	strncat(fntemp, ".xml", sizeof(fntemp));
+	strncat(fntemp, ".xml", sizeof(fntemp) - strlen(fntemp) - 1);
 	if (debug)
 		doc.Print(stdout, 0);
 	doc.SaveFile(fn);
@@ -797,7 +797,7 @@ int Webserver::SendPollResponse (struct MHD_Connection *conn)
 	fn = mktemp(fntemp);
 	if (fn == NULL)
 		return MHD_YES;
-	strncat(fntemp, ".xml", sizeof(fntemp));
+	strncat(fntemp, ".xml", sizeof(fntemp) - strlen(fntemp) - 1);
         doc.Print(stdout, 0);
 	doc.SaveFile(fn);
 	ret = web_send_file(conn, fn, MHD_HTTP_OK, true);
@@ -877,7 +877,7 @@ int web_config_post (void *cls, enum MHD_ValueKind kind, const char *key, const 
 {
 	conninfo_t *cp = (conninfo_t *)cls;
 
-	fprintf(stderr, "post: key=%s data=%s size=%d\n", key, data, size);
+	fprintf(stderr, "post: key=%s data=%s size=%lu\n", key, data, size);
 	if (strcmp(cp->conn_url, "/devpost.html") == 0) {
 		if (strcmp(key, "fn") == 0)
 			cp->conn_arg1 = (void *)strdup(data);
