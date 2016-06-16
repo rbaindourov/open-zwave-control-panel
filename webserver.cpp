@@ -159,7 +159,7 @@ int web_send_file (struct MHD_Connection *conn, const char *filename, const int 
 			ct = "text/xml";
 		else if (strcmp(p, "js") == 0)
 			ct = "text/javascript";
-                else if (strcmp(p,'json')==0)
+                else if (strcmp(p,"json")==0)
                         ct = "text/json";
 	}
 	if (stat(filename, &buf) == -1 ||
@@ -797,7 +797,7 @@ int Webserver::SendPollResponse (struct MHD_Connection *conn)
 	fn = mktemp(fntemp);
 	if (fn == NULL)
 		return MHD_YES;
-	strncat(fntemp, ".xml", sizeof(fntemp));	
+	strncat(fntemp, ".xml", sizeof(fntemp));
         doc.Print(stdout, 0);
 	doc.SaveFile(fn);
 	ret = web_send_file(conn, fn, MHD_HTTP_OK, true);
@@ -925,7 +925,7 @@ int web_config_post (void *cls, enum MHD_ValueKind kind, const char *key, const 
                     cp->conn_arg4 = (void *)strdup(data);
                     fprintf( stdout, "poll data: %s", data);
                 }
-			
+
 	} else if (strcmp(cp->conn_url, "/savepost.html") == 0) {
 		if (strcmp(key, "fun") == 0)
 			cp->conn_arg1 = (void *)strdup(data);
@@ -988,8 +988,8 @@ int Webserver::Handler (struct MHD_Connection *conn, const char *url,
 	int ret;
 	conninfo_t *cp;
 
-	
-	fprintf(stderr, "Inboud Request: %x: %s: \"%s\" conn=%x size=%d *ptr=%x\n", pthread_self(), method, url, conn, *up_data_size, *ptr);
+
+	fprintf(stderr, "Inboud Request: %x: %s: \"%s\" conn=%x size=%lu *ptr=%x\n", pthread_self(), method, url, conn, *up_data_size, *ptr);
 	if (*ptr == NULL) {	/* do never respond on first call */
 		cp = (conninfo_t *)malloc(sizeof(conninfo_t));
 		if (cp == NULL)
@@ -1017,9 +1017,9 @@ int Webserver::Handler (struct MHD_Connection *conn, const char *url,
 		return MHD_YES;
 	}
 	if (strcmp(method, MHD_HTTP_METHOD_GET) == 0) {
-            
+
             fprintf(stdout, "GET URL: %s\nGET devname: %s\n", url, devname );
-            
+
 		if (strcmp(url, "/") == 0 ||
 				strcmp(url, "/index.html") == 0)
 			ret = web_send_file(conn, "cp.html", MHD_HTTP_OK, false);
@@ -1251,7 +1251,7 @@ int Webserver::Handler (struct MHD_Connection *conn, const char *url,
 				} else if (strcmp((char *)cp->conn_arg1, "snif") == 0) {
 					if (cp->conn_arg2 != NULL && strlen((char *)cp->conn_arg2) > 4) {
 						uint8 node = strtol(((char *)cp->conn_arg2) + 4, NULL, 10);
-						fprintf(stdout, "WebServer:admpost:snif: homeId = %s, node = %s ", homeId, node);
+						fprintf(stdout, "WebServer:admpost:snif: homeId = %u, node = %hhu ", homeId, node);
                                                 setAdminFunction("Send Node Information");
 						setAdminState(Manager::Get()->SendNodeInformation(homeId, node));
 					}
@@ -1279,8 +1279,8 @@ int Webserver::Handler (struct MHD_Connection *conn, const char *url,
 					}
 				} else if (strcmp((char *)cp->conn_arg1, "refreshnode") == 0) {
 					if (cp->conn_arg2 != NULL && strlen((char *)cp->conn_arg2) > 4) {
-						uint8 node = strtol(((char *)cp->conn_arg2) + 4, NULL, 10);						
-                                                fprintf(stdout, "WebServer:admpost:refreshnode: homeId = %zu, node = %u ", homeId, node);                                                
+						uint8 node = strtol(((char *)cp->conn_arg2) + 4, NULL, 10);
+                                                fprintf(stdout, "WebServer:admpost:refreshnode: homeId = %u, node = %u ", homeId, node);
                                                 Manager::Get()->RefreshNodeInfo(homeId, node);
 					}
 				}
