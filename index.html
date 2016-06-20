@@ -27,10 +27,30 @@
 <h1>
 <a id="installation-instructions-on-raspbian" class="anchor" href="#installation-instructions-on-raspbian" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation Instructions on Raspbian</h1>
 
-<pre><code>sudo apt-get install libudev-dev
+<pre><code>cd
+sudo apt-get install libudev-dev
 git clone https://github.com/rbaindourov/open-zwave
-
+cd open-zwave
+make
+make install
+cd 
+wget http://mirror.clarkson.edu/gnu/libmicrohttpd/libmicrohttpd-0.9.50.tar.gz
+tar -xzf libmicrohttpd-0.9.50.tar.gz
+mv libmicrohttpd-0.9.50 libmicrohttpd
+cd libmicrohttpd
+./configure
+make
+make install
+cd 
+git clone https://github.com/rbaindourov/open-zwave-control-panel
+make
 </code></pre>
+
+<p>You will need to determine which serial port the ZStick / razBerry is plugged into.
+This is usually done by tailing dmesg,<code>dmesg | tail</code>, and plugging the ZStick into an open USB slot.
+Use this value to start up the API.</p>
+
+<p><code>./ozwcp -p 5555 -z /dev/ttyACM0</code></p>
 
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/rbaindourov/open-zwave-control-panel">open-zwave-json-api</a> is maintained by <a href="https://github.com/rbaindourov">rbaindourov</a>.</span>
