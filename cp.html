@@ -111,7 +111,7 @@
             </div>
             <div class="col-xs-6 col-sm-4">
                 <h2>Backup Controller</h2>
-                <form name="BackPost" method="post"> 
+                <form name="BackPost" method="post">
                     <input name="devhidden" class="hide" value="hidden">
                     <div class="stack" style="position: relative; height: 50px;">
                         <button class="btn btn-default" id="save" name="save" onclick="return DoSavePost();" type="submit">Save...</button>
@@ -396,7 +396,7 @@
                     </div>
                     <div id="admcntl" name="admcntl" class="rsb" style="display: none;"></div>
                     <button id="admgo" name="go" class="btn btn-success" style="display: none;"
-                        onclick="return DoAdmPost(0);" type="submit">Go</button> 
+                        onclick="return DoAdmPost(0);" type="submit">Go</button>
                     <button id="admcan" name="cancel" class="btn btn-warning" style="display: none;"
                         onclick="return DoAdmPost(1);" type="submit">Cancel</button>
                     <div class="rsb" style="margin-left: 10px;">
@@ -410,7 +410,7 @@
                 <form name="NodePost" method="post">
                     <input name="nodehidden" class="hide" value="hidden">
                     <div class="esb" style="margin-left: 14px; width: 180px;">
-                        <!--
+                        
                         <div class="btn-group-vertical" data-toggle="buttons">
                             <label class="btn btn-default">
                                 <input type="radio" value="nam" autocomplete="off"> Name
@@ -429,7 +429,7 @@
                             $('.btn-group-vertical input').on('change', DoNodeHelp);
                         </script>
                         <br>
-                        -->
+
                         <select class="form-control" id="nodeops" onchange="return DoNodeHelp();">
                             <option value="choice" selected="true">Select an operation:</option>
                             <option value="nam">Name</option>
