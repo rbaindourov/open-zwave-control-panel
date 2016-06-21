@@ -12,7 +12,7 @@
   <body>
     <section class="page-header">
       <h1 class="project-name">open-zwave-json-api</h1>
-      <h2 class="project-tagline">The OpenZWave JSON API levarages the OpenZWave Control Panel to create a gateway from a Raspbery PI3 and ZStick,  for discovery and updates of nodes on the network.</h2>
+      <h2 class="project-tagline">The OpenZWave JSON API leverages the OpenZWave Control Panel to create a gateway from a Raspbery PI3 and ZStick,  for discovery and updates of nodes on the network.</h2>
       <a href="https://github.com/rbaindourov/open-zwave-control-panel" class="btn">View on GitHub</a>
       <a href="https://github.com/rbaindourov/open-zwave-control-panel/zipball/master" class="btn">Download .zip</a>
       <a href="https://github.com/rbaindourov/open-zwave-control-panel/tarball/master" class="btn">Download .tar.gz</a>
@@ -43,11 +43,12 @@ make
 make install
 cd 
 git clone https://github.com/rbaindourov/open-zwave-control-panel
+cd open-zwave-control-panel
 make
 </code></pre>
 
 <p>You will need to determine which serial port the ZStick / razBerry is plugged into.
-This is usually done by tailing dmesg,<code>dmesg | tail</code>, and plugging the ZStick into an open USB slot.
+This is usually done by tailing dmesg with a <code>dmesg | tail</code> after plugging the ZStick into an open USB slot.
 Use this value to start up the API.</p>
 
 <p><code>./ozwcp -p 5555 -z /dev/ttyACM0</code></p>
