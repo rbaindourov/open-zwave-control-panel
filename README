@@ -3,9 +3,11 @@ OpenZWave Control Panel v0.2a 8/8/2011
 Welcome to a very alpha release of the OpenZWave Control Panel.
 
 With some slight modifications on my end to repurose it into a JSON API you can poll.
-Added command line parameter that allows passing in of the serial port when starting up the control panel.
+Added command line parameter that allows passing in of the serial port when starting up the control panel. Take a look at the `restart.sh` script for an example.
 Once loaded you can just pass a request to `http://URL:PORT/poll.json` to receive network updates.
 This does break the control panel UI, as of now, because that message would have been used to create the UI instead.
+
+Converting XML to JSON with xml2json library.
 
 
 

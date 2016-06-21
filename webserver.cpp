@@ -339,7 +339,7 @@ const char *Webserver::SendTopoResponse (struct MHD_Connection *conn, const char
 	fn = mktemp(fntemp);
 	if (fn == NULL)
 		return EMPTY;
-	strncat(fntemp, ".xml", sizeof(fntemp));
+	strncat(fntemp, ".xml", sizeof(fntemp) - strlen(fntemp) - 1);
 	if (debug)
 		doc.Print(stdout, 0);
 	doc.SaveFile(fn);
@@ -467,7 +467,7 @@ const char *Webserver::SendStatResponse (struct MHD_Connection *conn, const char
 	fn = mktemp(fntemp);
 	if (fn == NULL)
 		return EMPTY;
-	strncat(fntemp, ".xml", sizeof(fntemp));
+	strncat(fntemp, ".xml", sizeof(fntemp) - strlen(fntemp) - 1 );
 	if (debug)
 		doc.Print(stdout, 0);
 	doc.SaveFile(fn);
@@ -519,7 +519,7 @@ const char *Webserver::SendTestHealResponse (struct MHD_Connection *conn, const 
 	fn = mktemp(fntemp);
 	if (fn == NULL)
 		return EMPTY;
-	strncat(fntemp, ".xml", sizeof(fntemp));
+	strncat(fntemp, ".xml", sizeof(fntemp) - strlen(fntemp) - 1);
 	if (debug)
 		doc.Print(stdout, 0);
 	doc.SaveFile(fn);
@@ -633,7 +633,7 @@ const char *Webserver::SendSceneResponse (struct MHD_Connection *conn, const cha
 	fn = mktemp(fntemp);
 	if (fn == NULL)
 		return EMPTY;
-	strncat(fntemp, ".xml", sizeof(fntemp));
+	strncat(fntemp, ".xml", sizeof(fntemp) - strlen(fntemp) - 1);
 	if (debug)
 		doc.Print(stdout, 0);
 	doc.SaveFile(fn);
@@ -892,7 +892,7 @@ int web_config_post (void *cls, enum MHD_ValueKind kind, const char *key, const 
 {
 	conninfo_t *cp = (conninfo_t *)cls;
 
-	fprintf(stderr, "post: key=%s data=%s size=%d\n", key, data, size);
+	fprintf(stderr, "post: key=%s data=%s size=%lu\n", key, data, size);
 	if (strcmp(cp->conn_url, "/devpost.html") == 0) {
 		if (strcmp(key, "fn") == 0)
 			cp->conn_arg1 = (void *)strdup(data);
@@ -940,7 +940,7 @@ int web_config_post (void *cls, enum MHD_ValueKind kind, const char *key, const 
                     cp->conn_arg4 = (void *)strdup(data);
                     fprintf( stdout, "poll data: %s", data);
                 }
-			
+
 	} else if (strcmp(cp->conn_url, "/savepost.html") == 0) {
 		if (strcmp(key, "fun") == 0)
 			cp->conn_arg1 = (void *)strdup(data);
@@ -1003,8 +1003,8 @@ int Webserver::Handler (struct MHD_Connection *conn, const char *url,
 	int ret;
 	conninfo_t *cp;
 
-	
-	fprintf(stderr, "Inboud Request: %x: %s: \"%s\" conn=%x size=%d *ptr=%x\n", pthread_self(), method, url, conn, *up_data_size, *ptr);
+
+	fprintf(stderr, "Inboud Request: %x: %s: \"%s\" conn=%x size=%lu *ptr=%x\n", pthread_self(), method, url, conn, *up_data_size, *ptr);
 	if (*ptr == NULL) {	/* do never respond on first call */
 		cp = (conninfo_t *)malloc(sizeof(conninfo_t));
 		if (cp == NULL)
@@ -1032,9 +1032,9 @@ int Webserver::Handler (struct MHD_Connection *conn, const char *url,
 		return MHD_YES;
 	}
 	if (strcmp(method, MHD_HTTP_METHOD_GET) == 0) {
-            
+
             fprintf(stdout, "GET URL: %s\nGET devname: %s\n", url, devname );
-            
+
 		if (strcmp(url, "/") == 0 ||
 				strcmp(url, "/index.html") == 0)
 			ret = web_send_file(conn, "cp.html", MHD_HTTP_OK, false);
@@ -1268,7 +1268,7 @@ int Webserver::Handler (struct MHD_Connection *conn, const char *url,
 				} else if (strcmp((char *)cp->conn_arg1, "snif") == 0) {
 					if (cp->conn_arg2 != NULL && strlen((char *)cp->conn_arg2) > 4) {
 						uint8 node = strtol(((char *)cp->conn_arg2) + 4, NULL, 10);
-						fprintf(stdout, "WebServer:admpost:snif: homeId = %s, node = %s ", homeId, node);
+						fprintf(stdout, "WebServer:admpost:snif: homeId = %u, node = %hhu ", homeId, node);
                                                 setAdminFunction("Send Node Information");
 						setAdminState(Manager::Get()->SendNodeInformation(homeId, node));
 					}
@@ -1296,8 +1296,8 @@ int Webserver::Handler (struct MHD_Connection *conn, const char *url,
 					}
 				} else if (strcmp((char *)cp->conn_arg1, "refreshnode") == 0) {
 					if (cp->conn_arg2 != NULL && strlen((char *)cp->conn_arg2) > 4) {
-						uint8 node = strtol(((char *)cp->conn_arg2) + 4, NULL, 10);						
-                                                fprintf(stdout, "WebServer:admpost:refreshnode: homeId = %zu, node = %u ", homeId, node);                                                
+						uint8 node = strtol(((char *)cp->conn_arg2) + 4, NULL, 10);
+                                                fprintf(stdout, "WebServer:admpost:refreshnode: homeId = %u, node = %u ", homeId, node);
                                                 Manager::Get()->RefreshNodeInfo(homeId, node);
 					}
 				}
