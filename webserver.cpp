@@ -809,8 +809,12 @@ int Webserver::SendPollResponse (struct MHD_Connection *conn, const bool json)
         } else{             
             doc.Accept( &printer );        
             FILE * fp = fopen( fn, "w");
-            fputs( xml2json(printer.CStr()).c_str(), fp);
+            const char * tmpxml = xml2json(printer.CStr()).c_str();
+            printf( tmpxml );
+            printf( "\n" );
+            fputs( tmpxml, fp);
             fclose(fp);
+            
         }
         
         

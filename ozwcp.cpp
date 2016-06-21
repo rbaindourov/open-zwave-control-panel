@@ -468,7 +468,7 @@ void OnNotification (Notification const* _notification, void* _context)
 {
 
 	ValueID id = _notification->GetValueID();
-	frpintf( stdout, "Notification: Home 0x%08x Node %d Genre %s Class %s Instance %d Index %d Type %s Scene Id %d Group %d Button %d", _notification->GetHomeId(), _notification->GetNodeId(), valueGenreStr(id.GetGenre()), cclassStr(id.GetCommandClassId()), id.GetInstance(), id.GetIndex(), valueTypeStr(id.GetType()), _notification->GetSceneId(), _notification->GetGroupIdx()  );
+	fprintf( stdout, "Notification: Home 0x%08x Node %d Genre %s Class %s Instance %d Index %d Type %s Scene Id %d Group %d Button %d", _notification->GetHomeId(), _notification->GetNodeId(), valueGenreStr(id.GetGenre()), cclassStr(id.GetCommandClassId()), id.GetInstance(), id.GetIndex(), valueTypeStr(id.GetType()), _notification->GetSceneId(), _notification->GetGroupIdx()  );
 	switch (_notification->GetType()) {
 		case Notification::Type_ValueAdded:
 			pthread_mutex_lock(&nlock);
