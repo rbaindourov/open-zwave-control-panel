@@ -307,6 +307,8 @@ void MyNode::updateGroup (uint8 node, uint8 grp, char *glist)
  */
 void MyNode::updatePoll(char *ilist, char *plist)
 {
+
+	fprintf(stdout, "updatePoll iList:%s pList:%s\n", ilist, plist );
 	vector<char*> ids;
 	vector<bool> polls;
 	MyValue *v;
@@ -467,8 +469,8 @@ uint8 MyNode::getRemoved()
 void OnNotification (Notification const* _notification, void* _context)
 {
 
-	ValueID id = _notification->GetValueID();	
-        Log::Write(LogLevel_Info, 
+	ValueID id = _notification->GetValueID();
+        Log::Write(LogLevel_Info,
                 "Notification: type %s:%d home %08x node %d genre %d class %d instance %d index %d type %d m_byte %d ",
                 _notification->GetAsString().c_str(), _notification->GetType(), _notification->GetHomeId(),_notification->GetNodeId(), id.GetGenre(), id.GetCommandClassId(),	id.GetInstance(), id.GetIndex(), id.GetType(), _notification->GetByte());
         switch (_notification->GetType()) {
