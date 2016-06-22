@@ -146,7 +146,7 @@ void web_close_file (void *cls)
  */
 int web_send_file (struct MHD_Connection *conn, const char *filename, const int code, const bool unl)
 {
-	
+
     fprintf(stdout, "WebSendFile: %s\n", filename );
     struct stat buf;
 	FILE *fp;
@@ -164,7 +164,7 @@ int web_send_file (struct MHD_Connection *conn, const char *filename, const int 
                 else if (strcmp(p,"json")==0)
                         ct = "text/json";
 	}
-	if( stat(filename, &buf) == -1 || ((fp = fopen(filename, "r")) == NULL)) 
+	if( stat(filename, &buf) == -1 || ((fp = fopen(filename, "r")) == NULL))
         {
 		if (strcmp(p, "xml") == 0)
 			response = MHD_create_response_from_data(0, (void *)"", MHD_NO, MHD_NO);
@@ -681,61 +681,15 @@ int Webserver::SendPollResponse (struct MHD_Connection *conn, const bool json)
 	pollElement->SetAttribute("cmode", cmode);
 	pollElement->SetAttribute("save", needsave);
 	pollElement->SetAttribute("noop", noop);
-	if (noop)
-		noop = false;
-	bcnt = logbytes;
-	if (stat("./OZW_Log.txt", &buf) != -1 &&
-			buf.st_size > bcnt &&
-			(fp = fopen("./OZW_Log.txt", "r")) != NULL) {
-		if (fseek(fp, bcnt, SEEK_SET) != -1) {
-			logread = fread(logbuffer, 1, logbufsz, fp);
-			while (logread > 0 && logbuffer[--logread] != '\n')
-				;
-			logbytes = bcnt + logread;
-			fclose(fp);
-		}
-	}
-	logbuffer[logread] = '\0';
+	if (noop) noop = false;
 
-	TiXmlElement* logElement = new TiXmlElement("log");
-	pollElement->LinkEndChild(logElement);
-	logElement->SetAttribute("size", logread);
-	logElement->SetAttribute("offset", logbytes - logread);
-	TiXmlText *textElement = new TiXmlText(logbuffer);
-	logElement->LinkEndChild(textElement);
-
-	TiXmlElement* adminElement = new TiXmlElement("admin");
-	pollElement->LinkEndChild(adminElement);
-	adminElement->SetAttribute("active", getAdminState() ? "true" : "false");
-	if (adminmsg.length() > 0) {
-		string msg = getAdminFunction() + getAdminMessage();
-		TiXmlText *textElement = new TiXmlText(msg.c_str());
-		adminElement->LinkEndChild(textElement);
-		adminmsg.clear();
-	}
-
-	TiXmlElement* updateElement = new TiXmlElement("update");
-	pollElement->LinkEndChild(updateElement);
-	i = MyNode::getRemovedCount();
-	if (i > 0) {
-		logbuffer[0] = '\0';
-		while (i > 0) {
-			uint8 node = MyNode::getRemoved();
-			snprintf(str, sizeof(str), "%d", node);
-			strcat(logbuffer, str);
-			i = MyNode::getRemovedCount();
-			if (i > 0)
-				strcat(logbuffer, ",");
-		}
-		updateElement->SetAttribute("remove", logbuffer);
-	}
 
 	pthread_mutex_lock(&nlock);
-	if (MyNode::getAnyChanged()) {
+
 		i = 0;
 		j = 1;
 		while (j <= MyNode::getNodeCount() && i < MAX_NODES) {
-			if (nodes[i] != NULL && nodes[i]->getChanged()) {
+			if (nodes[i] != NULL ) {
 				bool listening;
 				bool flirs;
 				bool zwaveplus;
@@ -765,12 +719,7 @@ int Webserver::SendPollResponse (struct MHD_Connection *conn, const bool json)
 				nodeElement->SetAttribute("routing", Manager::Get()->IsNodeRoutingDevice(homeId, i) ? "true" : "false");
 				nodeElement->SetAttribute("security", Manager::Get()->IsNodeSecurityDevice(homeId, i) ? "true" : "false");
 				nodeElement->SetAttribute("time", nodes[i]->getTime());
-#if 0
-				fprintf(stderr, "i=%d failed=%d\n", i, Manager::Get()->IsNodeFailed(homeId, i));
-				fprintf(stderr, "i=%d awake=%d\n", i, Manager::Get()->IsNodeAwake(homeId, i));
-				fprintf(stderr, "i=%d state=%s\n", i, Manager::Get()->GetNodeQueryStage(homeId, i).c_str());
-				fprintf(stderr, "i=%d listening=%d flirs=%d\n", i, listening, flirs);
-#endif
+
 				if (Manager::Get()->IsNodeFailed(homeId, i))
 					nodeElement->SetAttribute("status", "Dead");
 				else {
@@ -787,10 +736,8 @@ int Webserver::SendPollResponse (struct MHD_Connection *conn, const bool json)
 					}
 				}
 				web_get_groups(i, nodeElement);
-				// Don't think the UI needs these
-				//web_get_genre(ValueID::ValueGenre_Basic, i, nodeElement);
 				web_get_values(i, nodeElement);
-				nodes[i]->setChanged(false);
+
 				j++;
 			}
 			i++;
@@ -799,26 +746,23 @@ int Webserver::SendPollResponse (struct MHD_Connection *conn, const bool json)
 	pthread_mutex_unlock(&nlock);
 	strncpy(fntemp, "/tmp/ozwcp.poll.XXXXXX", sizeof(fntemp));
 	fn = mktemp(fntemp);
-	if (fn == NULL)
-		return MHD_YES;
-	
-        if( !json ){        
-            strncat(fntemp, ".xml", sizeof(fntemp));	        
-            doc.Print(stdout, 0);
-            doc.SaveFile(fn);            
-        } else{             
-            doc.Accept( &printer );        
-            FILE * fp = fopen( fn, "w");
-            const char * tmpxml = xml2json(printer.CStr()).c_str();
-            printf( tmpxml );
-            printf( "\n" );
-            fputs( tmpxml, fp);
-            fclose(fp);
-            
-        }
-        
-        
+	if (fn == NULL) return MHD_YES;
 
+  if( !json ){
+      strncat(fntemp, ".xml", sizeof(fntemp));
+      doc.Print(stdout, 0);
+      doc.SaveFile(fn);
+  } else{
+      doc.Accept( &printer );
+      FILE * fp = fopen( fn, "w");
+      const char * tmpxml = xml2json(printer.CStr()).c_str();
+      printf( tmpxml );
+      printf( "\n" );
+      fputs( tmpxml, fp);
+      fclose(fp);
+
+  }
+	
 	ret = web_send_file(conn, fn, MHD_HTTP_OK, true);
 	return ret;
 }
