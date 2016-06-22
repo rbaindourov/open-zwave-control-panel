@@ -742,7 +742,7 @@ int Webserver::SendPollResponse (struct MHD_Connection *conn, const bool json)
 			}
 			i++;
 		}
-	}
+	
 	pthread_mutex_unlock(&nlock);
 	strncpy(fntemp, "/tmp/ozwcp.poll.XXXXXX", sizeof(fntemp));
 	fn = mktemp(fntemp);
@@ -762,7 +762,7 @@ int Webserver::SendPollResponse (struct MHD_Connection *conn, const bool json)
       fclose(fp);
 
   }
-	
+
 	ret = web_send_file(conn, fn, MHD_HTTP_OK, true);
 	return ret;
 }
